@@ -11,6 +11,7 @@ class Calculator:
         self.style.theme_use("xpnative")
         self.root.bind('<Key>', self.handle_keypress)
         # self.style.configure('custom.TButton', font=('Arial', '15'), width=5)
+        self.style.configure('TButton', font=('Arial, 15'), width=6)
         self.entry = ttk.Entry(self.root, font=('Arial', 20, 'bold'), justify='right')
         self.entry.grid(row=0, column=0, sticky='ew', columnspan=4, ipady=15, ipadx=5)
         self.entry.insert(0, '0')
@@ -19,19 +20,21 @@ class Calculator:
 
     def setup_btns(self):
         digits = [
-            ('7', 2, 0), ('8', 2, 1), ('9', 2, 2),
-            ('4', 3, 0), ('5', 3, 1), ('6', 3, 2),
-            ('1', 4, 0), ('2', 4, 1), ('3', 4, 2)
+            ('7', 3, 0), ('8', 3, 1), ('9', 3, 2),
+            ('4', 4, 0), ('5', 4, 1), ('6', 4, 2),
+            ('1', 5, 0), ('2', 5, 1), ('3', 5, 2)
         ]
         operators = [
             ('/', 1, 3),
             ('x', 2, 3),
             ('-', 3, 3),
-            ('+', 4, 3)
+            ('+', 4, 3),
+
+            ('^', 2, 0), ('²√', 2, 1), ('%', 2, 2)
         ]
         special_btns = [
             ('C', 1, 0, self.clear_entry), ('CE', 1, 1, self.clear_entry), ('DEL', 1, 2, self.delete_digit),
-            ('0', 5, 0, lambda t='0' :self.add_digits(t)), ('00', 5, 1, lambda t='00' :self.add_digits(t)), ('.', 5, 2, self.add_decimal), ('=', 5, 3, self.calculate)
+            ('0', 6, 0, lambda t='0' :self.add_digits(t)), ('00', 6, 1, lambda t='00' :self.add_digits(t)), ('.', 6, 2, self.add_decimal)
         ]
         for text, row, col in digits+operators:
             btn = ttk.Button(self.root, text=text, style='custom.TButton', command=lambda t=text: self.add_digits(t))
@@ -40,6 +43,9 @@ class Calculator:
         for text, row, col, cmd in special_btns:
             btn = ttk.Button(self.root, text=text, style='custom.TButton', command=cmd)
             btn.grid(row=row, column=col, ipadx=5, ipady=15)
+            ('=', 6, 3, self.calculate)
+        btn = ttk.Button(self.root, text="=", style='custom.TButton', command=self.calculate)
+        btn.grid(row=5, column=3, ipadx=5, ipady=15, rowspan=2, sticky='ns')
         
         # theme_btn = ttk.Button(self.root, text="Theme", command=self.change_theme)
         # theme_btn.grid(row=6, column=0, sticky='ew', columnspan=4) 
@@ -91,7 +97,9 @@ class Calculator:
             self.entry.insert(0, self.entry_state)
 
     def calculate(self):
-        data = self.entry_state.replace('x', '*')
+        data = self.entry_state.replace('x', '*').replace('^', '**')
+        data = re.sub(r'(\d+)%', r'\1/100', data)
+        data = re.sub(r'(\d+)([+-/])(\d+/100)', r'\1\2(\1*\3)', data)
         if data == "":
             return
         try:
@@ -140,5 +148,6 @@ class Calculator:
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Calculator")
+    root.resizable(False, False)
     calculator = Calculator(root)
     root.mainloop()
