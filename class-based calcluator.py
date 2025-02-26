@@ -109,6 +109,7 @@ class Calculator:
 
     def clear_entry(self):
         self.entry_state = ""
+        self.temp_result = ""
         self.entry.delete(0, tk.END)
         self.entry.insert(0, '0') 
 
