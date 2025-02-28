@@ -30,7 +30,7 @@ class Calculator:
             ('-', 3, 3),
             ('+', 4, 3),
 
-            ('^', 2, 0), ('²√', 2, 1), ('%', 2, 2)
+            ('^', 2, 0), ('√', 2, 1), ('%', 2, 2)
         ]
         special_btns = [
             ('C', 1, 0, self.clear_entry), ('CE', 1, 1, self.clear_entry), ('DEL', 1, 2, self.delete_digit),
@@ -99,7 +99,8 @@ class Calculator:
     def calculate(self):
         data = self.entry_state.replace('x', '*').replace('^', '**')
         data = re.sub(r'(\d+)%', r'\1/100', data)
-        data = re.sub(r'(\d+)([+-/])(\d+/100)', r'\1\2(\1*\3)', data)
+        data = re.sub(r'(\d+)([+-/])(\d+/100)', r'\1\2(\1*\3)', data )
+        data = re.sub(r'√(\d+)', r'\1**0.5', data)
         if data == "":
             return
         try:
